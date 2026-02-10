@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:14
+    container_name: voxlyce-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: voxlyce_db
+      POSTGRES_USER: voxlyce
+      POSTGRES_PASSWORD: voxlyce123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+
+  backend:
+    build:
+      context: ./BACKEND/voxlyce_back
+      dockerfile: Dockerfile
+    container_name: voxlyce-backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_USER: voxlyce
+      DB_PASSWORD: voxlyce123
+      JWT_SECRET: supersecret
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./FRONTEND
+      dockerfile: Dockerfile
+    container_name: voxlyce-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:

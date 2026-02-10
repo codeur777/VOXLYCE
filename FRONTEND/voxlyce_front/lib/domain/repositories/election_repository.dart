@@ -1,0 +1,1 @@
+// ElectionRepository interface

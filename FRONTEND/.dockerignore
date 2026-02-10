@@ -1,0 +1,23 @@
+# Flutter/Dart build artifacts
+voxlyce_front/build/
+voxlyce_front/.dart_tool/
+voxlyce_front/.packages
+
+# IDE
+voxlyce_front/.idea/
+voxlyce_front/.vscode/
+voxlyce_front/*.iml
+
+# Platform-specific folders (not needed for web build)
+voxlyce_front/android/
+voxlyce_front/ios/
+voxlyce_front/linux/
+voxlyce_front/macos/
+voxlyce_front/windows/
+
+# Tests
+voxlyce_front/test/
+
+# Git
+.git/
+.gitignore

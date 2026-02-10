@@ -1,0 +1,1 @@
+// CandidateRepository interface

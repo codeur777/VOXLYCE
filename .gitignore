@@ -1,0 +1,46 @@
+# Environmental variables
+.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+.qodo/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+*.log
+
+# Java / Maven (Backend)
+**/target/
+**/*.class
+**/*.jar
+**/*.war
+**/*.ear
+**/*.log
+.mvn/wrapper/maven-wrapper.jar
+**/mvnw
+**/mvnw.cmd
+
+# Flutter / Dart (Frontend)
+**/build/
+**/.dart_tool/
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/pubspec.lock
+**/*.js_
+**/*.js_map
+**/*.js.deps
+**/ios/Flutter/.last_build_id
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/node_modules/

@@ -1,0 +1,1 @@
+// ResultRepository interface
