@@ -21,4 +21,3 @@ docker-compose up --build
 - Backend : http://localhost:8080
 - PostgreSQL : localhost:5432 (DB: voxlyce_db)
 
-**Ne jamais publier le fichier `.env` !**
