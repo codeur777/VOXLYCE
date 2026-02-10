@@ -1,0 +1,660 @@
+{
+	"info": {
+		"_postman_id": "voxlyce-api-collection",
+		"name": "Voxlyce API - Complete Collection",
+		"description": "Collection complète des endpoints de l'API Voxlyce pour la gestion des élections",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "election_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "position_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "candidate_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Jean\",\n    \"lastName\": \"Dupont\",\n    \"email\": \"jean.dupont@student.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"STUDENT\",\n    \"classroom\": \"L3-INFO-A\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Inscription d'un nouvel étudiant"
+					},
+					"response": []
+				},
+				{
+					"name": "Register Admin",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Admin\",\n    \"lastName\": \"System\",\n    \"email\": \"admin@voxlyce.com\",\n    \"password\": \"Admin123!\",\n    \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Inscription d'un administrateur"
+					},
+					"response": []
+				},
+				{
+					"name": "Register Supervisor",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Prof\",\n    \"lastName\": \"Martin\",\n    \"email\": \"prof.martin@voxlyce.com\",\n    \"password\": \"Prof123!\",\n    \"role\": \"SUPERVISOR\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Inscription d'un superviseur"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"        console.log('JWT Token saved:', jsonData.token);",
+									"    }",
+									"    if (jsonData.requires2FA) {",
+									"        console.log('2FA required');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jean.dupont@student.com\",\n    \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Connexion avec email et mot de passe. Peut nécessiter 2FA."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify 2FA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"        console.log('JWT Token saved after 2FA');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jean.dupont@student.com\",\n    \"code\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/verify-2fa",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "verify-2fa"]
+						},
+						"description": "Vérification du code 2FA pour obtenir le token JWT"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints d'authentification"
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Create Election",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.id) {",
+									"        pm.collectionVariables.set('election_id', jsonData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Élection du Bureau des Étudiants 2026\",\n    \"description\": \"Élection annuelle pour le comité étudiant\",\n    \"type\": \"COMMITTEE_VOTE\",\n    \"startDate\": \"2026-03-01T08:00:00\",\n    \"endDate\": \"2026-03-02T18:00:00\",\n    \"positions\": [\n        {\n            \"name\": \"Président\",\n            \"description\": \"Responsable du bureau des étudiants\",\n            \"maxCandidates\": 5\n        },\n        {\n            \"name\": \"Vice-Président\",\n            \"description\": \"Adjoint du président\",\n            \"maxCandidates\": 3\n        },\n        {\n            \"name\": \"Trésorier\",\n            \"description\": \"Gestion des finances\",\n            \"maxCandidates\": 3\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/elections",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "elections"]
+						},
+						"description": "Créer une nouvelle élection avec ses postes"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pending Candidates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/candidates/pending",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "candidates", "pending"]
+						},
+						"description": "Liste des candidats en attente de validation"
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Candidate",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/candidates/{{candidate_id}}/status?status=ACCEPTED",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "candidates", "{{candidate_id}}", "status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACCEPTED"
+								}
+							]
+						},
+						"description": "Accepter un candidat"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Candidate",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/candidates/{{candidate_id}}/status?status=REJECTED",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "candidates", "{{candidate_id}}", "status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "REJECTED"
+								}
+							]
+						},
+						"description": "Rejeter un candidat"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Election Results",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/elections/{{election_id}}/validate-results",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "elections", "{{election_id}}", "validate-results"]
+						},
+						"description": "Valider les résultats finaux pour les rendre publics"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour les administrateurs"
+		},
+		{
+			"name": "Supervisor",
+			"item": [
+				{
+					"name": "Start Election",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/supervisor/elections/{{election_id}}/start",
+							"host": ["{{base_url}}"],
+							"path": ["supervisor", "elections", "{{election_id}}", "start"]
+						},
+						"description": "Démarrer une élection (déclenche le timer de 24h)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Elector Count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/supervisor/elections/{{election_id}}/elector-count",
+							"host": ["{{base_url}}"],
+							"path": ["supervisor", "elections", "{{election_id}}", "elector-count"]
+						},
+						"description": "Vérifier le nombre d'étudiants inscrits"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour les superviseurs de classe"
+		},
+		{
+			"name": "Student - Candidature",
+			"item": [
+				{
+					"name": "Apply as Candidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.id) {",
+									"        pm.collectionVariables.set('candidate_id', jsonData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"positionId\": 1,\n    \"manifesto\": \"Je m'engage à améliorer la vie étudiante en organisant plus d'événements et en représentant vos intérêts auprès de l'administration.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/student/candidates",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates"]
+						},
+						"description": "S'inscrire comme candidat pour un poste"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Candidatures",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/candidates/my-candidatures",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates", "my-candidatures"]
+						},
+						"description": "Voir mes candidatures"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Candidature",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"positionId\": 1,\n    \"manifesto\": \"Programme mis à jour : Je m'engage à améliorer la communication entre étudiants et administration.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/student/candidates/{{candidate_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates", "{{candidate_id}}"]
+						},
+						"description": "Modifier ma candidature"
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw Candidature",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/candidates/{{candidate_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates", "{{candidate_id}}"]
+						},
+						"description": "Retirer ma candidature"
+					},
+					"response": []
+				}
+			],
+			"description": "Gestion des candidatures étudiantes"
+		},
+		{
+			"name": "Student - Elections",
+			"item": [
+				{
+					"name": "Get Available Elections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/elections",
+							"host": ["{{base_url}}"],
+							"path": ["student", "elections"]
+						},
+						"description": "Liste des élections disponibles pour voter"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Election Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/elections/{{election_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["student", "elections", "{{election_id}}"]
+						},
+						"description": "Détails d'une élection"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Election Candidates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/elections/{{election_id}}/candidates",
+							"host": ["{{base_url}}"],
+							"path": ["student", "elections", "{{election_id}}", "candidates"]
+						},
+						"description": "Liste des candidats acceptés pour une élection"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Voting Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/elections/{{election_id}}/voting-status",
+							"host": ["{{base_url}}"],
+							"path": ["student", "elections", "{{election_id}}", "voting-status"]
+						},
+						"description": "Vérifier si j'ai déjà voté pour chaque poste"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Elections History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/elections/history",
+							"host": ["{{base_url}}"],
+							"path": ["student", "elections", "history"]
+						},
+						"description": "Historique de toutes les élections validées"
+					},
+					"response": []
+				}
+			],
+			"description": "Consultation des élections"
+		},
+		{
+			"name": "Student - Vote",
+			"item": [
+				{
+					"name": "Cast Vote",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"electionId\": 1,\n    \"positionId\": 1,\n    \"candidateId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/student/vote",
+							"host": ["{{base_url}}"],
+							"path": ["student", "vote"]
+						},
+						"description": "Voter pour un candidat"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Election Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/elections/{{election_id}}/results",
+							"host": ["{{base_url}}"],
+							"path": ["student", "elections", "{{election_id}}", "results"]
+						},
+						"description": "Voir les résultats validés d'une élection"
+					},
+					"response": []
+				}
+			],
+			"description": "Vote et résultats"
+		},
+		{
+			"name": "Public - Elections",
+			"item": [
+				{
+					"name": "Get All Elections (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/elections",
+							"host": ["{{base_url}}"],
+							"path": ["elections"]
+						},
+						"description": "Obtenir toutes les élections (endpoint public)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Election Details (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/elections/{{election_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["elections", "{{election_id}}"]
+						},
+						"description": "Détails d'une élection (endpoint public)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Election Results (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/elections/{{election_id}}/results",
+							"host": ["{{base_url}}"],
+							"path": ["elections", "{{election_id}}", "results"]
+						},
+						"description": "Résultats d'une élection (visible après validation)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints publics (sans authentification)"
+		}
+	]
+}
