@@ -83,14 +83,4 @@ INSERT INTO classrooms (name, level) VALUES
 ('Master 2 Informatique', 'M2')
 ON CONFLICT (name) DO NOTHING;
 
--- Insert SUPER_ADMIN (toi)
-INSERT INTO users (email, password, first_name, last_name, role, is_verified, two_factor_enabled) VALUES
-('superadmin@voxlyce.com', '$2a$10$xQZ9Z9Z9Z9Z9Z9Z9Z9Z9ZuKqYqYqYqYqYqYqYqYqYqYqYqYqYqYqY', 'Super', 'Admin', 'SUPER_ADMIN', TRUE, TRUE)
-ON CONFLICT (email) DO NOTHING;
-
--- Insert ADMIN
-INSERT INTO users (email, password, first_name, last_name, role, is_verified, two_factor_enabled) VALUES
-('admin@voxlyce.com', '$2a$10$xQZ9Z9Z9Z9Z9Z9Z9Z9Z9ZuKqYqYqYqYqYqYqYqYqYqYqYqYqYqYqY', 'Admin', 'Platform', 'ADMIN', TRUE, TRUE)
-ON CONFLICT (email) DO NOTHING;
-
--- Note: Le mot de passe par défaut est "password123" (à changer en production)
+-- Users will be created via the API /auth/register endpoint

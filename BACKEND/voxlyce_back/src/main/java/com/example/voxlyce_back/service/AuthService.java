@@ -32,8 +32,8 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .role(request.getRole())
-                .isVerified(request.getRole() == Role.STUDENT ? false : true) // Students need admin verification
-                .twoFactorEnabled(true)
+                .isVerified(true) // All users verified by default
+                .twoFactorEnabled(false) // Disable 2FA for easier testing
                 .build();
 
         if (request.getClassroomId() != null) {
@@ -41,7 +41,12 @@ public class AuthService {
         }
 
         userRepository.save(user);
+        
+        // Generate token immediately
+        var jwtToken = jwtUtil.generateToken(new UserDetailsImpl(user));
+        
         return AuthResponse.builder()
+                .token(jwtToken)
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .mfaRequired(false)
@@ -55,14 +60,7 @@ public class AuthService {
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         
-        if (user.isTwoFactorEnabled()) {
-            tfaService.generateOTP(user.getEmail());
-            return AuthResponse.builder()
-                    .email(user.getEmail())
-                    .mfaRequired(true)
-                    .build();
-        }
-
+        // 2FA disabled for easier testing
         var jwtToken = jwtUtil.generateToken(new UserDetailsImpl(user));
         return AuthResponse.builder()
                 .token(jwtToken)

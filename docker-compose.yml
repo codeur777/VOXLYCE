@@ -28,7 +28,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_USER: voxlyce
       DB_PASSWORD: voxlyce123
-      JWT_SECRET: supersecret
+      JWT_SECRET: voxlyce-super-secret-key-for-jwt-token-generation-2026
     ports:
       - "8080:8080"
 

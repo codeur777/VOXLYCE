@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "voxlyce-api-collection",
-		"name": "Voxlyce API - Complete Collection",
-		"description": "Collection complète des endpoints de l'API Voxlyce pour la gestion des élections",
+		"_postman_id": "voxlyce-api-collection-v2",
+		"name": "Voxlyce API - Complete Collection v2",
+		"description": "Collection complète avec utilisateurs de test pré-configurés",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"auth": {
@@ -27,32 +27,181 @@
 			"type": "string"
 		},
 		{
-			"key": "user_id",
-			"value": "",
+			"key": "admin_email",
+			"value": "admin@voxlyce.com",
+			"type": "string"
+		},
+		{
+			"key": "admin_password",
+			"value": "Admin123!",
+			"type": "string"
+		},
+		{
+			"key": "supervisor_email",
+			"value": "supervisor@voxlyce.com",
+			"type": "string"
+		},
+		{
+			"key": "supervisor_password",
+			"value": "Super123!",
+			"type": "string"
+		},
+		{
+			"key": "student_email",
+			"value": "student@voxlyce.com",
+			"type": "string"
+		},
+		{
+			"key": "student_password",
+			"value": "Student123!",
 			"type": "string"
 		},
 		{
 			"key": "election_id",
-			"value": "",
+			"value": "1",
 			"type": "string"
 		},
 		{
 			"key": "position_id",
-			"value": "",
+			"value": "1",
 			"type": "string"
 		},
 		{
 			"key": "candidate_id",
-			"value": "",
+			"value": "1",
 			"type": "string"
 		}
 	],
 	"item": [
 		{
+			"name": "0. Setup - Create Test Users",
+			"item": [
+				{
+					"name": "1. Create Admin User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"        console.log('Admin created and token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Admin\",\n    \"lastName\": \"System\",\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\",\n    \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create Supervisor User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('Supervisor created');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Prof\",\n    \"lastName\": \"Martin\",\n    \"email\": \"{{supervisor_email}}\",\n    \"password\": \"{{supervisor_password}}\",\n    \"role\": \"SUPERVISOR\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Create Student User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('Student created');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Jean\",\n    \"lastName\": \"Dupont\",\n    \"email\": \"{{student_email}}\",\n    \"password\": \"{{student_password}}\",\n    \"role\": \"STUDENT\",\n    \"classroom\": \"L3-INFO-A\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Exécutez ces 3 requêtes dans l'ordre pour créer les utilisateurs de test"
+		},
+		{
 			"name": "Authentication",
 			"item": [
 				{
-					"name": "Register Student",
+					"name": "Login as Admin",
 					"event": [
 						{
 							"listen": "test",
@@ -62,6 +211,7 @@
 									"    var jsonData = pm.response.json();",
 									"    if (jsonData.token) {",
 									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"        console.log('Admin JWT Token saved');",
 									"    }",
 									"}"
 								],
@@ -82,117 +232,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Jean\",\n    \"lastName\": \"Dupont\",\n    \"email\": \"jean.dupont@student.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"STUDENT\",\n    \"classroom\": \"L3-INFO-A\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
-						},
-						"description": "Inscription d'un nouvel étudiant"
-					},
-					"response": []
-				},
-				{
-					"name": "Register Admin",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Admin\",\n    \"lastName\": \"System\",\n    \"email\": \"admin@voxlyce.com\",\n    \"password\": \"Admin123!\",\n    \"role\": \"ADMIN\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
-						},
-						"description": "Inscription d'un administrateur"
-					},
-					"response": []
-				},
-				{
-					"name": "Register Supervisor",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Prof\",\n    \"lastName\": \"Martin\",\n    \"email\": \"prof.martin@voxlyce.com\",\n    \"password\": \"Prof123!\",\n    \"role\": \"SUPERVISOR\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
-						},
-						"description": "Inscription d'un superviseur"
-					},
-					"response": []
-				},
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 200) {",
-									"    var jsonData = pm.response.json();",
-									"    if (jsonData.token) {",
-									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
-									"        console.log('JWT Token saved:', jsonData.token);",
-									"    }",
-									"    if (jsonData.requires2FA) {",
-									"        console.log('2FA required');",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"jean.dupont@student.com\",\n    \"password\": \"Password123!\"\n}"
+							"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/login",
 							"host": ["{{base_url}}"],
 							"path": ["auth", "login"]
-						},
-						"description": "Connexion avec email et mot de passe. Peut nécessiter 2FA."
+						}
 					},
 					"response": []
 				},
 				{
-					"name": "Verify 2FA",
+					"name": "Login as Supervisor",
 					"event": [
 						{
 							"listen": "test",
@@ -202,7 +253,7 @@
 									"    var jsonData = pm.response.json();",
 									"    if (jsonData.token) {",
 									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
-									"        console.log('JWT Token saved after 2FA');",
+									"        console.log('Supervisor JWT Token saved');",
 									"    }",
 									"}"
 								],
@@ -223,19 +274,60 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"jean.dupont@student.com\",\n    \"code\": \"123456\"\n}"
+							"raw": "{\n    \"email\": \"{{supervisor_email}}\",\n    \"password\": \"{{supervisor_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/auth/verify-2fa",
+							"raw": "{{base_url}}/auth/login",
 							"host": ["{{base_url}}"],
-							"path": ["auth", "verify-2fa"]
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"        console.log('Student JWT Token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
 						},
-						"description": "Vérification du code 2FA pour obtenir le token JWT"
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{student_email}}\",\n    \"password\": \"{{student_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
 					},
 					"response": []
 				}
 			],
-			"description": "Endpoints d'authentification"
+			"description": "Endpoints d'authentification - Utilisez Login as Admin/Supervisor/Student selon vos besoins"
 		},
 		{
 			"name": "Admin",
@@ -251,6 +343,7 @@
 									"    var jsonData = pm.response.json();",
 									"    if (jsonData.id) {",
 									"        pm.collectionVariables.set('election_id', jsonData.id);",
+									"        console.log('Election ID saved:', jsonData.id);",
 									"    }",
 									"}"
 								],
@@ -275,7 +368,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["admin", "elections"]
 						},
-						"description": "Créer une nouvelle élection avec ses postes"
+						"description": "⚠️ Connectez-vous d'abord en tant qu'Admin"
 					},
 					"response": []
 				},
@@ -289,7 +382,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["admin", "candidates", "pending"]
 						},
-						"description": "Liste des candidats en attente de validation"
+						"description": "⚠️ Connectez-vous d'abord en tant qu'Admin"
 					},
 					"response": []
 				},
@@ -309,7 +402,7 @@
 								}
 							]
 						},
-						"description": "Accepter un candidat"
+						"description": "⚠️ Connectez-vous d'abord en tant qu'Admin"
 					},
 					"response": []
 				},
@@ -329,7 +422,7 @@
 								}
 							]
 						},
-						"description": "Rejeter un candidat"
+						"description": "⚠️ Connectez-vous d'abord en tant qu'Admin"
 					},
 					"response": []
 				},
@@ -343,12 +436,12 @@
 							"host": ["{{base_url}}"],
 							"path": ["admin", "elections", "{{election_id}}", "validate-results"]
 						},
-						"description": "Valider les résultats finaux pour les rendre publics"
+						"description": "⚠️ Connectez-vous d'abord en tant qu'Admin"
 					},
 					"response": []
 				}
 			],
-			"description": "Endpoints pour les administrateurs"
+			"description": "Endpoints Admin - Connectez-vous avec Login as Admin avant d'utiliser"
 		},
 		{
 			"name": "Supervisor",
@@ -363,7 +456,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["supervisor", "elections", "{{election_id}}", "start"]
 						},
-						"description": "Démarrer une élection (déclenche le timer de 24h)"
+						"description": "⚠️ Connectez-vous d'abord en tant que Supervisor"
 					},
 					"response": []
 				},
@@ -377,12 +470,12 @@
 							"host": ["{{base_url}}"],
 							"path": ["supervisor", "elections", "{{election_id}}", "elector-count"]
 						},
-						"description": "Vérifier le nombre d'étudiants inscrits"
+						"description": "⚠️ Connectez-vous d'abord en tant que Supervisor"
 					},
 					"response": []
 				}
 			],
-			"description": "Endpoints pour les superviseurs de classe"
+			"description": "Endpoints Supervisor - Connectez-vous avec Login as Supervisor avant d'utiliser"
 		},
 		{
 			"name": "Student - Candidature",
@@ -398,6 +491,7 @@
 									"    var jsonData = pm.response.json();",
 									"    if (jsonData.id) {",
 									"        pm.collectionVariables.set('candidate_id', jsonData.id);",
+									"        console.log('Candidate ID saved:', jsonData.id);",
 									"    }",
 									"}"
 								],
@@ -415,14 +509,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"positionId\": 1,\n    \"manifesto\": \"Je m'engage à améliorer la vie étudiante en organisant plus d'événements et en représentant vos intérêts auprès de l'administration.\"\n}"
+							"raw": "{\n    \"positionId\": {{position_id}},\n    \"manifesto\": \"Je m'engage à améliorer la vie étudiante en organisant plus d'événements et en représentant vos intérêts auprès de l'administration.\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/student/candidates",
 							"host": ["{{base_url}}"],
 							"path": ["student", "candidates"]
 						},
-						"description": "S'inscrire comme candidat pour un poste"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -436,7 +530,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "candidates", "my-candidatures"]
 						},
-						"description": "Voir mes candidatures"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -452,14 +546,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"positionId\": 1,\n    \"manifesto\": \"Programme mis à jour : Je m'engage à améliorer la communication entre étudiants et administration.\"\n}"
+							"raw": "{\n    \"positionId\": {{position_id}},\n    \"manifesto\": \"Programme mis à jour : Je m'engage à améliorer la communication entre étudiants et administration.\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/student/candidates/{{candidate_id}}",
 							"host": ["{{base_url}}"],
 							"path": ["student", "candidates", "{{candidate_id}}"]
 						},
-						"description": "Modifier ma candidature"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -473,12 +567,12 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "candidates", "{{candidate_id}}"]
 						},
-						"description": "Retirer ma candidature"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				}
 			],
-			"description": "Gestion des candidatures étudiantes"
+			"description": "Endpoints Student Candidature - Connectez-vous avec Login as Student avant d'utiliser"
 		},
 		{
 			"name": "Student - Elections",
@@ -493,7 +587,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "elections"]
 						},
-						"description": "Liste des élections disponibles pour voter"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -507,7 +601,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "elections", "{{election_id}}"]
 						},
-						"description": "Détails d'une élection"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -521,7 +615,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "elections", "{{election_id}}", "candidates"]
 						},
-						"description": "Liste des candidats acceptés pour une élection"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -535,7 +629,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "elections", "{{election_id}}", "voting-status"]
 						},
-						"description": "Vérifier si j'ai déjà voté pour chaque poste"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -549,12 +643,12 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "elections", "history"]
 						},
-						"description": "Historique de toutes les élections validées"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				}
 			],
-			"description": "Consultation des élections"
+			"description": "Endpoints Student Elections - Connectez-vous avec Login as Student avant d'utiliser"
 		},
 		{
 			"name": "Student - Vote",
@@ -571,14 +665,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"electionId\": 1,\n    \"positionId\": 1,\n    \"candidateId\": 1\n}"
+							"raw": "{\n    \"electionId\": {{election_id}},\n    \"positionId\": {{position_id}},\n    \"candidateId\": {{candidate_id}}\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/student/vote",
 							"host": ["{{base_url}}"],
 							"path": ["student", "vote"]
 						},
-						"description": "Voter pour un candidat"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				},
@@ -592,12 +686,12 @@
 							"host": ["{{base_url}}"],
 							"path": ["student", "elections", "{{election_id}}", "results"]
 						},
-						"description": "Voir les résultats validés d'une élection"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
 					},
 					"response": []
 				}
 			],
-			"description": "Vote et résultats"
+			"description": "Endpoints Student Vote - Connectez-vous avec Login as Student avant d'utiliser"
 		},
 		{
 			"name": "Public - Elections",
@@ -615,7 +709,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["elections"]
 						},
-						"description": "Obtenir toutes les élections (endpoint public)"
+						"description": "✅ Pas besoin d'authentification"
 					},
 					"response": []
 				},
@@ -632,7 +726,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["elections", "{{election_id}}"]
 						},
-						"description": "Détails d'une élection (endpoint public)"
+						"description": "✅ Pas besoin d'authentification"
 					},
 					"response": []
 				},
@@ -649,12 +743,12 @@
 							"host": ["{{base_url}}"],
 							"path": ["elections", "{{election_id}}", "results"]
 						},
-						"description": "Résultats d'une élection (visible après validation)"
+						"description": "✅ Pas besoin d'authentification"
 					},
 					"response": []
 				}
 			],
-			"description": "Endpoints publics (sans authentification)"
+			"description": "Endpoints publics - Pas besoin d'authentification"
 		}
 	]
 }
