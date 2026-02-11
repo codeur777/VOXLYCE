@@ -16,4 +16,8 @@ public class CandidateResponse {
     private PositionResponse position;
     private String manifesto;
     private CandidateStatus status;
+    private String studentCardPhotoUrl;
+    private Boolean depositFeePaid;
+    private Double depositFeeAmount;
+    private String paymentReference;
 }

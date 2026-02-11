@@ -58,6 +58,10 @@ public class MappingService {
                 .position(toPositionResponse(candidate.getPosition()))
                 .manifesto(candidate.getManifesto())
                 .status(candidate.getStatus())
+                .studentCardPhotoUrl(candidate.getStudentCardPhotoUrl())
+                .depositFeePaid(candidate.getDepositFeePaid())
+                .depositFeeAmount(candidate.getDepositFeeAmount())
+                .paymentReference(candidate.getPaymentReference())
                 .build();
     }
 }

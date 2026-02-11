@@ -1,1 +1,43 @@
-// AuthState
+import 'package:equatable/equatable.dart';
+import '../../../data/models/auth_response_model.dart';
+
+/// Auth States
+abstract class AuthState extends Equatable {
+  const AuthState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class AuthInitial extends AuthState {}
+
+class AuthLoading extends AuthState {}
+
+class AuthAuthenticated extends AuthState {
+  final AuthResponseModel authResponse;
+
+  const AuthAuthenticated(this.authResponse);
+
+  @override
+  List<Object?> get props => [authResponse];
+}
+
+class Auth2FARequired extends AuthState {
+  final String email;
+
+  const Auth2FARequired(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class AuthUnauthenticated extends AuthState {}
+
+class AuthError extends AuthState {
+  final String message;
+
+  const AuthError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

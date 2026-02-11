@@ -7,6 +7,7 @@ import com.example.voxlyce_back.model.CandidateStatus;
 import com.example.voxlyce_back.repository.CandidateRepository;
 import com.example.voxlyce_back.service.AuditService;
 import com.example.voxlyce_back.service.ElectionService;
+import com.example.voxlyce_back.service.MappingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,12 +28,14 @@ public class AdminController {
     private final ElectionService electionService;
     private final CandidateRepository candidateRepository;
     private final AuditService auditService;
+    private final MappingService mappingService;
 
     @PostMapping("/elections")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @Operation(summary = "Create a new election and its positions")
     public ResponseEntity<?> createElection(@RequestBody ElectionRequest request) {
-        return ResponseEntity.ok(electionService.createElection(request));
+        var election = electionService.createElection(request);
+        return ResponseEntity.ok(mappingService.toElectionResponse(election));
     }
 
     @GetMapping("/candidates/pending")

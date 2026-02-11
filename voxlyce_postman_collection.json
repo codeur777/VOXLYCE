@@ -509,14 +509,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"positionId\": {{position_id}},\n    \"manifesto\": \"Je m'engage à améliorer la vie étudiante en organisant plus d'événements et en représentant vos intérêts auprès de l'administration.\"\n}"
+							"raw": "{\n    \"positionId\": {{position_id}},\n    \"manifesto\": \"Je m'engage à améliorer la vie étudiante en organisant plus d'événements et en représentant vos intérêts auprès de l'administration.\",\n    \"studentCardPhotoUrl\": \"https://example.com/photos/student-card-123.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/student/candidates",
 							"host": ["{{base_url}}"],
 							"path": ["student", "candidates"]
 						},
-						"description": "⚠️ Connectez-vous d'abord en tant que Student"
+						"description": "⚠️ Connectez-vous d'abord en tant que Student\n\nNote: studentCardPhotoUrl est OPTIONNEL"
 					},
 					"response": []
 				},
@@ -568,6 +568,66 @@
 							"path": ["student", "candidates", "{{candidate_id}}"]
 						},
 						"description": "⚠️ Connectez-vous d'abord en tant que Student"
+					},
+					"response": []
+				},
+				{
+					"name": "Pay Deposit Fee (500F)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidateId\": {{candidate_id}},\n    \"paymentMethod\": \"MOBILE_MONEY\",\n    \"paymentReference\": \"TXN123456789\",\n    \"amount\": 500.0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/student/candidates/{{candidate_id}}/pay-deposit",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates", "{{candidate_id}}", "pay-deposit"]
+						},
+						"description": "⚠️ Connectez-vous d'abord en tant que Student\n\n✅ OBLIGATOIRE pour validation par l'admin\n💰 Montant: 500F"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Payment Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/student/candidates/{{candidate_id}}/payment-status",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates", "{{candidate_id}}", "payment-status"]
+						},
+						"description": "⚠️ Connectez-vous d'abord en tant que Student"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Student Card Photo",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidateId\": {{candidate_id}},\n    \"photoUrl\": \"https://example.com/photos/student-card-updated.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/student/candidates/{{candidate_id}}/upload-student-card",
+							"host": ["{{base_url}}"],
+							"path": ["student", "candidates", "{{candidate_id}}", "upload-student-card"]
+						},
+						"description": "⚠️ Connectez-vous d'abord en tant que Student\n\n📸 OPTIONNEL - Peut être ajouté à tout moment"
 					},
 					"response": []
 				}

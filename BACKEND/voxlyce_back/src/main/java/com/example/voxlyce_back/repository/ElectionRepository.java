@@ -16,4 +16,7 @@ public interface ElectionRepository extends JpaRepository<Election, Long> {
     
     @Query("SELECT e FROM Election e WHERE e.classroom = :classroom OR e.type = :type")
     List<Election> findByClassroomOrType(@Param("classroom") Classroom classroom, @Param("type") ElectionType type);
+    
+    @Query("SELECT e FROM Election e LEFT JOIN FETCH e.positions WHERE e.id = :id")
+    Election findByIdWithPositions(@Param("id") Long id);
 }

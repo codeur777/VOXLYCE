@@ -25,6 +25,7 @@ public class ElectionService {
                 .title(request.getTitle())
                 .type(request.getType())
                 .status(ElectionStatus.PENDING)
+                .positions(new java.util.ArrayList<>())
                 .build();
 
         if (request.getType() == ElectionType.CLASS_VOTE && request.getClassroomId() != null) {
@@ -37,10 +38,12 @@ public class ElectionService {
             var positions = request.getPositionNames().stream()
                     .map(name -> Position.builder().name(name).election(savedElection).build())
                     .collect(Collectors.toList());
-            positionRepository.saveAll(positions);
+            var savedPositions = positionRepository.saveAll(positions);
+            savedElection.getPositions().addAll(savedPositions);
         }
 
         auditService.logAction("ELECTION_CREATED", "Created election: " + savedElection.getTitle());
+        
         return savedElection;
     }
 

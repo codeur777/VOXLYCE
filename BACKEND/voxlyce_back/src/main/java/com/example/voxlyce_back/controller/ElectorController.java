@@ -59,7 +59,10 @@ public class ElectorController {
                 .user(user)
                 .position(position)
                 .manifesto(request.getManifesto())
+                .studentCardPhotoUrl(request.getStudentCardPhotoUrl()) // Photo optionnelle
                 .status(CandidateStatus.PENDING)
+                .depositFeePaid(false) // Pas encore payé
+                .depositFeeAmount(500.0) // 500F
                 .build();
         
         candidateRepository.save(candidate);
@@ -249,5 +252,98 @@ public class ElectorController {
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(responses);
+    }
+
+    // ========== PAIEMENT DES FRAIS DE DÉPÔT ==========
+    
+    @PostMapping("/candidates/{id}/pay-deposit")
+    @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Payer les frais de dépôt pour une candidature")
+    public ResponseEntity<PaymentResponse> payDepositFee(@PathVariable Long id, @RequestBody PaymentRequest request) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        Candidate candidate = candidateRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+        
+        if (!candidate.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You can only pay for your own candidature");
+        }
+        
+        if (candidate.getDepositFeePaid()) {
+            throw new RuntimeException("Deposit fee already paid");
+        }
+        
+        // Vérifier le montant
+        if (request.getAmount() < candidate.getDepositFeeAmount()) {
+            throw new RuntimeException("Insufficient payment amount. Required: " + candidate.getDepositFeeAmount() + "F");
+        }
+        
+        // Enregistrer le paiement
+        candidate.setDepositFeePaid(true);
+        candidate.setPaymentReference(request.getPaymentReference());
+        candidate.setPaymentDate(java.time.LocalDateTime.now());
+        candidateRepository.save(candidate);
+        
+        auditService.logAction("DEPOSIT_FEE_PAID", 
+            "User " + email + " paid deposit fee for candidature ID: " + id, user);
+        
+        return ResponseEntity.ok(PaymentResponse.builder()
+                .candidateId(candidate.getId())
+                .paid(true)
+                .amount(candidate.getDepositFeeAmount())
+                .paymentReference(candidate.getPaymentReference())
+                .paymentDate(candidate.getPaymentDate())
+                .message("Payment successful. Your candidature is now complete.")
+                .build());
+    }
+
+    @GetMapping("/candidates/{id}/payment-status")
+    @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Vérifier le statut de paiement d'une candidature")
+    public ResponseEntity<PaymentResponse> getPaymentStatus(@PathVariable Long id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        Candidate candidate = candidateRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+        
+        if (!candidate.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You can only check your own candidature");
+        }
+        
+        return ResponseEntity.ok(PaymentResponse.builder()
+                .candidateId(candidate.getId())
+                .paid(candidate.getDepositFeePaid())
+                .amount(candidate.getDepositFeeAmount())
+                .paymentReference(candidate.getPaymentReference())
+                .paymentDate(candidate.getPaymentDate())
+                .message(candidate.getDepositFeePaid() ? "Payment completed" : "Payment pending")
+                .build());
+    }
+
+    // ========== UPLOAD PHOTO CARTE ÉTUDIANT ==========
+    
+    @PutMapping("/candidates/{id}/upload-student-card")
+    @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Ajouter/Modifier la photo de carte d'étudiant (optionnel)")
+    public ResponseEntity<CandidateResponse> uploadStudentCard(@PathVariable Long id, @RequestBody PhotoUploadRequest request) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        Candidate candidate = candidateRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+        
+        if (!candidate.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You can only update your own candidature");
+        }
+        
+        candidate.setStudentCardPhotoUrl(request.getPhotoUrl());
+        candidateRepository.save(candidate);
+        
+        auditService.logAction("STUDENT_CARD_UPLOADED", 
+            "User " + email + " uploaded student card for candidature ID: " + id, user);
+        
+        return ResponseEntity.ok(mappingService.toCandidateResponse(candidate));
     }
 }

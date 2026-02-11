@@ -31,4 +31,21 @@ public class Candidate {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CandidateStatus status = CandidateStatus.PENDING;
+
+    // Photo de la carte d'étudiant (optionnel)
+    @Column(name = "student_card_photo_url")
+    private String studentCardPhotoUrl;
+
+    // Frais de dépôt
+    @Column(name = "deposit_fee_paid", nullable = false)
+    private Boolean depositFeePaid = false;
+
+    @Column(name = "deposit_fee_amount")
+    private Double depositFeeAmount = 500.0; // 500F par défaut
+
+    @Column(name = "payment_reference")
+    private String paymentReference;
+
+    @Column(name = "payment_date")
+    private java.time.LocalDateTime paymentDate;
 }
